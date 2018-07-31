@@ -98,6 +98,7 @@ H = tf.identity(H, name='H')  # just to give it a name
 Yflat = tf.reshape(Yr, [-1, INTERNALSIZE])    # [ BATCHSIZE x SEQLEN, INTERNALSIZE ]
 Ylogits = layers.linear(Yflat, ALPHASIZE)     # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
 Yflat_ = tf.reshape(Yo_, [-1, ALPHASIZE])     # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
+# loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=Yflat_)  # [ BATCHSIZE x SEQLEN ]
 loss = tf.nn.softmax_cross_entropy_with_logits_v2(logits=Ylogits, labels=Yflat_)  # [ BATCHSIZE x SEQLEN ]
 loss = tf.reshape(loss, [batchsize, -1])      # [ BATCHSIZE, SEQLEN ]
 Yo = tf.nn.softmax(Ylogits, name='Yo')        # [ BATCHSIZE x SEQLEN, ALPHASIZE ]
