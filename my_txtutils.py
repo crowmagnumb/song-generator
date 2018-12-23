@@ -148,16 +148,20 @@ def print_learning_learned_comparison(X, Y, losses, fileranges, batch_loss, batc
     sequence_len = X.shape[1]  # sequence_len in number of characters
     start_index_in_epoch = index % (epoch_size * batch_size * sequence_len)
     for k in range(batch_size):
-        index_in_epoch = index % (epoch_size * batch_size * sequence_len)
-        decx = decode_to_text(X[k], avoid_tab_and_lf=True)
-        decy = decode_to_text(Y[k], avoid_tab_and_lf=True)
-        bookname = find_book(index_in_epoch, fileranges)
-        formatted_bookname = "{: <10.40}".format(bookname)  # min 10 and max 40 chars
-        epoch_string = "{:4d}".format(index) + " (epoch {}) ".format(epoch)
-        loss_string = "loss: {:.5f}".format(losses[k])
-        print_string = epoch_string + formatted_bookname + " │ {} │ {} │ {}"
-        print(print_string.format(decx, decy, loss_string))
-        index += sequence_len
+        #
+        # Show 10 examples
+        #
+        if k % int(batch_size // 10) == 0:
+            index_in_epoch = index % (epoch_size * batch_size * sequence_len)
+            decx = decode_to_text(X[k], avoid_tab_and_lf=True)
+            decy = decode_to_text(Y[k], avoid_tab_and_lf=True)
+            bookname = find_book(index_in_epoch, fileranges)
+            formatted_bookname = "{: <10.40}".format(bookname)  # min 10 and max 40 chars
+            epoch_string = "{:4d}".format(index) + " (epoch {}) ".format(epoch)
+            loss_string = "loss: {:.5f}".format(losses[k])
+            print_string = epoch_string + formatted_bookname + " │ {} │ {} │ {}"
+            print(print_string.format(decx, decy, loss_string))
+            index += sequence_len
     # box formatting characters:
     # │ \u2502
     # ─ \u2500
@@ -235,7 +239,7 @@ class Progress:
 
 def read_data_files(globby, validation=True):
     """Read data files according to the specified glob pattern
-    Optionnaly set aside the last file as validation data.
+    Optionally set aside the last file as validation data.
     No validation data is returned if there are 5 files or less.
     :param directory: for example "data/*.txt"
     :param validation: if True (default), sets the last file aside as validation data

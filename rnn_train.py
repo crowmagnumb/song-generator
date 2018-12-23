@@ -52,7 +52,9 @@ NLAYERS = 3
 learning_rate = 0.001  # fixed learning rate
 dropout_pkeep = 0.8    # some dropout
 
-codetext, valitext, fileranges = txt.read_data_files(args.globby, validation=True)
+# validation = True
+validation = False
+codetext, valitext, fileranges = txt.read_data_files(args.globby, validation)
 
 # display some stats on the data
 epoch_size = len(codetext) // (BATCHSIZE * SEQLEN)
@@ -130,6 +132,7 @@ saver = tf.train.Saver(max_to_keep=1000)
 # for display: init the progress bar
 DISPLAY_FREQ = 50
 _50_BATCHES = DISPLAY_FREQ * BATCHSIZE * SEQLEN
+
 progress = txt.Progress(DISPLAY_FREQ, size=111 + 2, msg="Training on next " + str(DISPLAY_FREQ) + " batches")
 
 # init
@@ -139,8 +142,11 @@ sess = tf.Session()
 sess.run(init)
 step = 0
 
+# nb_epochs = 10
+nb_epochs = 400
+
 # training loop
-for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_epochs=10):
+for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_epochs):
 
     # train on one minibatch
     feed_dict = {X: x, Y_: y_, Hin: istate, lr: learning_rate, pkeep: dropout_pkeep, batchsize: BATCHSIZE}
@@ -183,7 +189,7 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
         txt.print_text_generation_footer()
 
     # save a checkpoint (every 500 batches)
-    if step // 10 % _50_BATCHES == 0:
+    if step // 10 % _50_BATCHES == 0 and step != 0:
         saved_file = saver.save(sess, 'checkpoints/rnn_train_' + timestamp, global_step=step)
         print("Saved file: " + saved_file)
 
@@ -193,3 +199,6 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
     # loop state around
     istate = ostate
     step += BATCHSIZE * SEQLEN
+
+saved_file = saver.save(sess, 'checkpoints/rnn_train_' + timestamp, global_step=step)
+print("Saved file: " + saved_file)

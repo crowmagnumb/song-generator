@@ -1,4 +1,4 @@
 __pycache__
-checkpoints
+checkpoints*
 log
 generated_output.txt
