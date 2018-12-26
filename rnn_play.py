@@ -48,11 +48,13 @@ mean = 756
 meanLineLength = 29
 num = stdev * int(np.random.randn(1, 1)[0][0]) + mean + int(meanLineLength / 2)
 
+startchar = "\n"
+
 with tf.Session() as sess:
     graph = tf.train.import_meta_graph(model + '.meta')
     graph.restore(sess, author)
 
-    x = my_txtutils.convert_from_alphabet(ord("L"))
+    x = my_txtutils.convert_from_alphabet(ord(startchar))
     x = np.array([[x]])  # shape [BATCHSIZE, SEQLEN] with BATCHSIZE=1 and SEQLEN=1
 
     # initial values
